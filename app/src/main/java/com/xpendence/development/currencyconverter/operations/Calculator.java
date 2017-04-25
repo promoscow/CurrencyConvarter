@@ -14,7 +14,7 @@ import java.util.Map;
  */
 
 public class Calculator {
-    public static void calculate(Map<String, Currency> map, String currencyFirst, String currencySecond, int amount) throws IOException {
+    public static double calculate(Map<String, Currency> map, String currencyFirst, String currencySecond, int amount) throws IOException {
 
         Currency currency1 = map.get(currencyFirst);
         Currency currency2 = map.get(currencySecond);
@@ -29,5 +29,7 @@ public class Calculator {
                 currency1.getCode(),
                 String.valueOf(numberFormat.format(x)),
                 currency2.getCode()));
+
+        return Double.parseDouble(String.valueOf(numberFormat.format(x)));
     }
 }

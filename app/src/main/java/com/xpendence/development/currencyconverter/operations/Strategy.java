@@ -55,6 +55,7 @@ public class Strategy {
                     Log.d("adding to array", currency.toString());
                 }
             }
+            map.put("643", new Currency("643", "RUB", 1, 1.0, new SimpleDateFormat("dd/MM/yyyy").format(new Date())));
         } catch (IOException e) {
             Log.d("exception", "catched");
             e.printStackTrace();

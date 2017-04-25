@@ -1,7 +1,11 @@
 package com.xpendence.development.currencyconverter.operations;
 
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.util.Log;
+
+import com.xpendence.development.currencyconverter.data.CurrenciesContract;
 
 import java.util.Map;
 
@@ -12,19 +16,16 @@ import java.util.Map;
 
 public class Converter {
     private SQLiteDatabase database;
-    private Strategy strategy;
-    private Map<String, Currency> currencies;
+    public static Map<String, Currency> currencies;
 
     public Converter(SQLiteDatabase database) {
         this.database = database;
-        strategy = new Strategy();
     }
 
     public void process() {
     }
 
-    public void prepareDB() {
-//        ContentValues contentValues = new ContentValues();
+    public void prepareDB() throws InterruptedException {
         new DBConnection().execute();
     }
 
@@ -38,6 +39,20 @@ public class Converter {
         @Override
         protected void onPostExecute(Map<String, Currency> map) {
             currencies = map;
+            if (currencies != null && currencies.size() != 0) {
+                database.delete(CurrenciesContract.Currencies.TABLE_NAME, null, null);
+                for (Currency currency : currencies.values()) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(CurrenciesContract.Currencies.D_CODE, currency.getdCode());
+                    contentValues.put(CurrenciesContract.Currencies.CODE, currency.getCode());
+                    contentValues.put(CurrenciesContract.Currencies.FOR_AMOUNT, currency.getForAmount());
+                    contentValues.put(CurrenciesContract.Currencies.RATE, currency.getRate());
+                    contentValues.put(CurrenciesContract.Currencies.DATE, currency.getDate());
+
+                    database.insert(CurrenciesContract.Currencies.TABLE_NAME, null, contentValues);
+                }
+                Log.d("process", "DB fill, size: " + currencies.size());
+            }
         }
     }
 }
