@@ -51,11 +51,13 @@ public class Strategy {
                     }
                     currency.setRate(Double.parseDouble(s.replace(",", ".")));
                     currency.setDate(getDate());
-                    map.put(currency.getdCode(), currency);
+                    map.put(currency.getCode(), currency);
                     Log.d("adding to array", currency.toString());
                 }
             }
-            map.put("643", new Currency("643", "RUB", 1, 1.0, new SimpleDateFormat("dd/MM/yyyy").format(new Date())));
+            Currency currency = new Currency("643", "RUB", 1, 1.0, new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+            map.put("RUB", currency);
+            Log.d("adding to array", map.get("RUB").toString());
         } catch (IOException e) {
             Log.d("exception", "catched");
             e.printStackTrace();

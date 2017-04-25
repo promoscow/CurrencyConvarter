@@ -31,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
         CurrenciesDBHelper dbHelper = new CurrenciesDBHelper(this);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
+        /**
+         * Если база данных существует, тогда — другой метод, наполнение объектами из БД.
+         */
+
         converter = new Converter(database);
         try {
             converter.prepareDB();
@@ -47,10 +51,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 1000);
     }
-
-//    @Override
-//    public void onSaveInstanceState(Bundle savedInstanceState) {
-//        savedInstanceState.put
-//        super.onSaveInstanceState(savedInstanceState);
-//    }
 }

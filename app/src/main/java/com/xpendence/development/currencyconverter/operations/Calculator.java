@@ -16,8 +16,12 @@ import java.util.Map;
 public class Calculator {
     public static double calculate(Map<String, Currency> map, String currencyFirst, String currencySecond, int amount) throws IOException {
 
+        Log.d("test", currencyFirst);
+        Log.d("test", currencySecond);
         Currency currency1 = map.get(currencyFirst);
         Currency currency2 = map.get(currencySecond);
+        Log.d("test", currency1.toString());
+        Log.d("test", currency2.toString());
 
         double x = ((currency1.getRate() / currency1.getForAmount()) / (currency2.getRate() / currency2.getForAmount()) * amount);
 

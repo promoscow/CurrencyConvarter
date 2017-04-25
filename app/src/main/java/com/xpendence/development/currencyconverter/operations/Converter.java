@@ -1,6 +1,7 @@
 package com.xpendence.development.currencyconverter.operations;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -26,6 +27,9 @@ public class Converter {
     }
 
     public void prepareDB() throws InterruptedException {
+        Cursor cursor = database.query("currencies", null, null, null, null, null, null);
+        Log.d("db", cursor.toString());
+//        if (database.execSQL("SELECT * FROM sqlite_master WHERE TYPE = 'table")) ;
         new DBConnection().execute();
     }
 
