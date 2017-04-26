@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.xpendence.development.currencyconverter.data.CurrenciesContract;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -27,21 +28,53 @@ public class Converter {
     }
 
     public void prepareDB() throws InterruptedException {
-        Cursor cursor = database.query("currencies", null, null, null, null, null, null);
-        Log.d("db", cursor.toString());
-//        if (database.execSQL("SELECT * FROM sqlite_master WHERE TYPE = 'table")) ;
+        Log.d("method invoke", "prepareDB");
         new DBConnection().execute();
+    }
+
+    public Map<String, Currency> readCurrenciesFromDB(SQLiteDatabase database) {
+        Map<String, Currency> map = new HashMap<>();
+        Cursor cursor = database.query(CurrenciesContract.Currencies.TABLE_NAME,
+                null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            int dCodeIndex = cursor.getColumnIndex(CurrenciesContract.Currencies.D_CODE);
+            int codeIndex = cursor.getColumnIndex(CurrenciesContract.Currencies.CODE);
+            int forAmountIndex = cursor.getColumnIndex(CurrenciesContract.Currencies.FOR_AMOUNT);
+            int rateIndex = cursor.getColumnIndex(CurrenciesContract.Currencies.RATE);
+            int dateIndex = cursor.getColumnIndex(CurrenciesContract.Currencies.DATE);
+            do {
+                Currency currency = new Currency(cursor.getString(dCodeIndex),
+                        cursor.getString(codeIndex),
+                        cursor.getInt(forAmountIndex),
+                        cursor.getDouble(rateIndex),
+                        cursor.getString(dateIndex));
+                Log.d("read from DB", currency.toString());
+                Log.d("currency", currency.getCode());
+
+                map.put(currency.getCode(), currency);
+            } while (cursor.moveToNext());
+        } else {
+            Log.d("currenciesDB", "0 rows");
+        }
+        cursor.close();
+        return map;
+    }
+
+    public void getCurrencies(SQLiteDatabase database) {
+        currencies = readCurrenciesFromDB(database);
     }
 
     private class DBConnection extends AsyncTask<Void, Void, Map<String, Currency>> {
 
         @Override
         protected Map<String, Currency> doInBackground(Void... voids) {
+            Log.d("method invoke", "doInBackground");
             return new Strategy().getCurrencies();
         }
 
         @Override
         protected void onPostExecute(Map<String, Currency> map) {
+            Log.d("method invoke", "onPostExecute");
             currencies = map;
             if (currencies != null && currencies.size() != 0) {
                 database.delete(CurrenciesContract.Currencies.TABLE_NAME, null, null);

@@ -1,22 +1,20 @@
 package com.xpendence.development.currencyconverter;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.xpendence.development.currencyconverter.operations.Calculator;
 import com.xpendence.development.currencyconverter.operations.Converter;
@@ -28,7 +26,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class HomeActivity extends AppCompatActivity {
-    Map<String, Currency> currencies;
+    private Map<String, Currency> currencies;
     public static String currencyFrom;
     public static String currencyTo;
     public static int amount;
@@ -43,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
         currencyTo = currencies.get("RUB").getCode();
         amount = 1;
 
-        setAllItems();
+//        setAllItems();
         setRate();
 
     }
@@ -64,14 +62,6 @@ public class HomeActivity extends AppCompatActivity {
         int indexFrom = Arrays.asList(currenciesArray).indexOf("USD (Доллар США)");
         spinnerFrom.setSelection(indexFrom);
 
-        Spinner spinnerTo = (Spinner) findViewById(R.id.spinnerTo);
-        ArrayAdapter<String> arrayAdapterTo = new ArrayAdapter<String>(this,
-                R.layout.support_simple_spinner_dropdown_item, currenciesArray);
-        arrayAdapterTo.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        spinnerTo.setAdapter(arrayAdapterTo);
-        int indexTo = Arrays.asList(currenciesArray).indexOf("RUB (Российский рубль)");
-        spinnerTo.setSelection(indexTo);
-
         spinnerFrom.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent,
                                        View itemSelected, int selectedItemPosition, long selectedId) {
@@ -79,7 +69,7 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d("position", String.valueOf(currenciesArray[selectedItemPosition]));
                 currencyFrom = currencies
                         .get(new StringTokenizer(String.valueOf(currenciesArray[selectedItemPosition]), " ")
-                        .nextToken())
+                                .nextToken())
                         .getCode();
                 Log.d("new currency", currencyFrom);
                 setRate();
@@ -93,13 +83,21 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        Spinner spinnerTo = (Spinner) findViewById(R.id.spinnerTo);
+        ArrayAdapter<String> arrayAdapterTo = new ArrayAdapter<String>(this,
+                R.layout.support_simple_spinner_dropdown_item, currenciesArray);
+        arrayAdapterTo.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        spinnerTo.setAdapter(arrayAdapterTo);
+        int indexTo = Arrays.asList(currenciesArray).indexOf("RUB (Российский рубль)");
+        spinnerTo.setSelection(indexTo);
+
         spinnerTo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent,
                                        View itemSelected, int selectedItemPosition, long selectedId) {
 
                 currencyTo = currencies
                         .get(new StringTokenizer(String.valueOf(currenciesArray[selectedItemPosition]), " ")
-                        .nextToken())
+                                .nextToken())
                         .getCode();
                 setRate();
 //                Toast toast = Toast.makeText(getApplicationContext(),
@@ -115,12 +113,10 @@ public class HomeActivity extends AppCompatActivity {
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -135,18 +131,135 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void createDialog(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder
-                .setMessage("Покормите кота!")
-                .setCancelable(false)
-                .setNegativeButton("ОК, иду на кухню",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-        AlertDialog alert = builder.create();
-        alert.show();
+        for (String s : currencies.keySet()) Log.d("currency createDialog", s);
+        final String[] currenciesArray = new String[currencies.size()];
+        int i = 0;
+        for (Currency s : currencies.values())
+            currenciesArray[i++] = String.format("%s (%s)", s.getCode(), geCurrencyName(s));
+        int indexFrom = Arrays.asList(currenciesArray).indexOf("USD (Доллар США)");
+        int indexTo = Arrays.asList(currenciesArray).indexOf("RUB (Российский рубль)");
+
+        LayoutInflater li = LayoutInflater.from(view.getContext());
+        View promptsView = li.inflate(R.layout.dialog_layout, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(view.getContext());
+        alertDialogBuilder.setView(promptsView);
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        /**
+         * Создание @SpinnerFrom
+         */
+        Spinner dialogSpinnerFrom = (Spinner) promptsView
+                .findViewById(R.id.spinnerFrom);
+
+        ArrayAdapter<String> adapterFrom = new ArrayAdapter<String>(view.getContext(),
+                android.R.layout.simple_spinner_item, currenciesArray) {
+            @Override
+            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                view.setPadding(32, 32, 32, 32);
+                return view;
+            }
+        };
+        dialogSpinnerFrom.setAdapter(adapterFrom);
+        dialogSpinnerFrom.setSelection(indexFrom);
+        dialogSpinnerFrom.setOnItemSelectedListener(new OnSpinnerItemClickedFrom());
+
+        /**
+         * Создание @SpinnerTo
+         */
+        Spinner dialogSpinnerTo = (Spinner) promptsView
+                .findViewById(R.id.spinnerTo);
+
+        ArrayAdapter<String> adapterTo = new ArrayAdapter<String>(view.getContext(),
+                android.R.layout.simple_spinner_item, currenciesArray) {
+            @Override
+            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                view.setPadding(32, 32, 32, 32);
+                return view;
+            }
+        };
+        dialogSpinnerTo.setAdapter(adapterTo);
+        dialogSpinnerTo.setSelection(indexTo);
+        dialogSpinnerTo.setOnItemSelectedListener(new OnSpinnerItemClickedTo());
+
+        /**
+         * Создание @textEdit
+         */
+        EditText editDisplayText = (EditText) promptsView.findViewById(R.id.editDisplayTextAmount);
+        editDisplayText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s != null && s.length() != 0) {
+                    amount = Integer.parseInt(String.valueOf(s));
+                }
+                if (amount <= 0) amount = 1;
+                setRate();
+            }
+        });
+
+        /**
+         * Показ диалогового окна.
+         */
+        alertDialog.show();
+        alertDialog.setCanceledOnTouchOutside(true);
+    }
+
+    private class OnSpinnerItemClickedFrom implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onItemSelected(AdapterView<?> parent,
+                                   View view, int pos, long id) {
+            Log.d("onItemSelected / Dialog", "enter");
+            String[] currenciesArrayDisplay = new String[currencies.size()];
+            int i = 0;
+            for (Currency s : currencies.values())
+                currenciesArrayDisplay[i++] = String.format("%s (%s)", s.getCode(), geCurrencyName(s));
+
+            currencyFrom = currencies
+                    .get(new StringTokenizer(String.valueOf(currenciesArrayDisplay[pos]), " ")
+                            .nextToken())
+                    .getCode();
+            Log.d("currency onItemSelected", currencyFrom);
+            setRate();
+
+//            Toast.makeText(parent.getContext(), "Clicked : " +
+//                    parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
+        }
+        @Override
+        public void onNothingSelected(AdapterView parent) {
+        }
+    }
+
+    private class OnSpinnerItemClickedTo implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onItemSelected(AdapterView<?> parent,
+                                   View view, int pos, long id) {
+            Log.d("onItemSelected / Dialog", "enter");
+            String[] currenciesArrayDisplay = new String[currencies.size()];
+            int i = 0;
+            for (Currency s : currencies.values())
+                currenciesArrayDisplay[i++] = String.format("%s (%s)", s.getCode(), geCurrencyName(s));
+
+            currencyTo = currencies
+                    .get(new StringTokenizer(String.valueOf(currenciesArrayDisplay[pos]), " ")
+                            .nextToken())
+                    .getCode();
+            Log.d("currency onItemSelected", currencyTo);
+            setRate();
+//            Toast.makeText(parent.getContext(), "Clicked : " +
+//                    parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
+        }
+        @Override
+        public void onNothingSelected(AdapterView parent) {
+        }
     }
 
     public void setRate() {
