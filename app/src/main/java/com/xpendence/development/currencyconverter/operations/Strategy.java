@@ -1,6 +1,7 @@
 package com.xpendence.development.currencyconverter.operations;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

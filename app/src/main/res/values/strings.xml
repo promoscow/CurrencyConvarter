@@ -3,6 +3,8 @@
     <string name="equals">=</string>
     <string name="fire">fire</string>
     <string name="cancel">cancel</string>
-    <string name="slide_to_update">Потяните, чтобы обновить курсы валют</string>
+    <string name="slide_to_update">Потяните, чтобы обновить курсы валют\n(последнее обновление — 01.01.2017)</string>
     <string name="last_update">(последнее обновление — 01.01.2017)</string>
+    <string name="refresh_started">Обновление началось</string>
+    <string name="refresh_finished">Обновление завершено</string>
 </resources>

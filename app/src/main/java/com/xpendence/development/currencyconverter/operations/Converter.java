@@ -20,6 +20,10 @@ public class Converter {
     private SQLiteDatabase database;
     public static Map<String, Currency> currencies;
 
+    public static Map<String, Currency> getCurrencies() {
+        return currencies;
+    }
+
     public Converter(SQLiteDatabase database) {
         this.database = database;
     }
@@ -60,8 +64,8 @@ public class Converter {
         return map;
     }
 
-    public void getCurrencies(SQLiteDatabase database) {
-        currencies = readCurrenciesFromDB(database);
+    public Map<String, Currency> getCurrencies(SQLiteDatabase database) {
+        return currencies = readCurrenciesFromDB(database);
     }
 
     private class DBConnection extends AsyncTask<Void, Void, Map<String, Currency>> {

@@ -1,11 +1,12 @@
 package com.xpendence.development.currencyconverter;
 
 import android.app.AlertDialog;
+import android.content.pm.ActivityInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,121 +17,50 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.xpendence.development.currencyconverter.data.CurrenciesDBHelper;
 import com.xpendence.development.currencyconverter.operations.Calculator;
 import com.xpendence.development.currencyconverter.operations.Converter;
 import com.xpendence.development.currencyconverter.operations.Currency;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private Map<String, Currency> currencies;
     public static String currencyFrom;
     public static String currencyTo;
     public static int amount;
-    public static boolean isFirstLaunch = true;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         currencies = Converter.currencies;
         currencyFrom = currencies.get("USD").getCode();
         currencyTo = currencies.get("RUB").getCode();
         amount = 1;
 
-//        setAllItems();
         setRate();
-
     }
-
-//    public void setAllItems() {
-//        for (String s : currencies.keySet()) Log.d("currency", s);
-//
-//        final String[] currenciesArray = new String[currencies.size()];
-//        int i = 0;
-//        for (Currency s : currencies.values())
-//            currenciesArray[i++] = String.format("%s (%s)", s.getCode(), geCurrencyName(s));
-//
-//        Spinner spinnerFrom = (Spinner) findViewById(R.id.spinnerFrom);
-//        ArrayAdapter<String> arrayAdapterFrom = new ArrayAdapter<String>(this,
-//                R.layout.support_simple_spinner_dropdown_item, currenciesArray);
-//        arrayAdapterFrom.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-//        spinnerFrom.setAdapter(arrayAdapterFrom);
-//        int indexFrom = Arrays.asList(currenciesArray).indexOf("USD (Доллар США)");
-//        spinnerFrom.setSelection(indexFrom);
-//
-//        spinnerFrom.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            public void onItemSelected(AdapterView<?> parent,
-//                                       View itemSelected, int selectedItemPosition, long selectedId) {
-//
-//                Log.d("position", String.valueOf(currenciesArray[selectedItemPosition]));
-//                currencyFrom = currencies
-//                        .get(new StringTokenizer(String.valueOf(currenciesArray[selectedItemPosition]), " ")
-//                                .nextToken())
-//                        .getCode();
-//                Log.d("new currency", currencyFrom);
-//                setRate();
-//
-////                Toast toast = Toast.makeText(getApplicationContext(),
-////                        "Ваш выбор: " + currenciesArray[selectedItemPosition], Toast.LENGTH_SHORT);
-////                toast.show();
-//            }
-//
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
-//
-//        Spinner spinnerTo = (Spinner) findViewById(R.id.spinnerTo);
-//        ArrayAdapter<String> arrayAdapterTo = new ArrayAdapter<String>(this,
-//                R.layout.support_simple_spinner_dropdown_item, currenciesArray);
-//        arrayAdapterTo.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-//        spinnerTo.setAdapter(arrayAdapterTo);
-//        int indexTo = Arrays.asList(currenciesArray).indexOf("RUB (Российский рубль)");
-//        spinnerTo.setSelection(indexTo);
-//
-//        spinnerTo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            public void onItemSelected(AdapterView<?> parent,
-//                                       View itemSelected, int selectedItemPosition, long selectedId) {
-//
-//                currencyTo = currencies
-//                        .get(new StringTokenizer(String.valueOf(currenciesArray[selectedItemPosition]), " ")
-//                                .nextToken())
-//                        .getCode();
-//                setRate();
-////                Toast toast = Toast.makeText(getApplicationContext(),
-////                        "Ваш выбор: " + currenciesArray[selectedItemPosition], Toast.LENGTH_SHORT);
-////                toast.show();
-//            }
-//
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
-//
-//        EditText editText = (EditText) findViewById(R.id.editTextAmount);
-//        editText.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if (s != null && s.length() != 0) {
-//                    amount = Integer.parseInt(String.valueOf(s));
-//                }
-//                if (amount <= 0) amount = 1;
-//                setRate();
-//            }
-//        });
-//    }
 
     public void createDialog(View view) {
         for (String s : currencies.keySet()) Log.d("currency createDialog", s);
@@ -216,6 +146,27 @@ public class HomeActivity extends AppCompatActivity {
         alertDialog.setCanceledOnTouchOutside(true);
     }
 
+    @Override
+    public void onRefresh() {
+        final TextView textView = (TextView) findViewById(R.id.textView3);
+        textView.setText("");
+
+        CurrenciesDBHelper dbHelper = new CurrenciesDBHelper(this);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Converter converter = new Converter(database);
+        try {
+            converter.prepareDB();
+            this.currencies = Converter.currencies;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(getBaseContext(), "Обновлено валют: " + currencies.size(), Toast.LENGTH_LONG).show();
+        mSwipeRefreshLayout.setRefreshing(false);
+        textView.setText("Потяните, чтобы обновить курсы валют\n(последнее обновление — "
+                + currencies.get("USD").getDate().replace("/", ".")
+                + ")");
+    }
+
     private class OnSpinnerItemClickedFrom implements AdapterView.OnItemSelectedListener {
         @Override
         public void onItemSelected(AdapterView<?> parent,
@@ -232,9 +183,6 @@ public class HomeActivity extends AppCompatActivity {
                     .getCode();
             Log.d("currency onItemSelected", currencyFrom);
             setRate();
-
-//            Toast.makeText(parent.getContext(), "Clicked : " +
-//                    parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -258,8 +206,6 @@ public class HomeActivity extends AppCompatActivity {
                     .getCode();
             Log.d("currency onItemSelected", currencyTo);
             setRate();
-//            Toast.makeText(parent.getContext(), "Clicked : " +
-//                    parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -275,12 +221,28 @@ public class HomeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        NumberFormat numberFormat = new DecimalFormat("0.00");
+        numberFormat.setRoundingMode(RoundingMode.DOWN);
+
+
+
         TextView currencyFrom = (TextView) findViewById(R.id.textViewFrom);
-        String result1 = String.valueOf(amount) + " " + HomeActivity.currencyFrom;
+        String am = (amount < 100000)
+                ? NumberFormat.getInstance(Locale.US).format(amount).replace(",", " ") : (amount < 1000000)
+                ? String.valueOf(amount / 1000) + "k" : (amount < 100000000)
+                ? String.valueOf(amount / 1000000) + "M" : "100M";
+        String result1 = am + " " + HomeActivity.currencyFrom;
         currencyFrom.setText(result1);
 
+
+
         TextView currencyTo = (TextView) findViewById(R.id.textViewTo);
-        String result2 = x + " " + HomeActivity.currencyTo;
+        String res = (x < 1000)
+                ? String.valueOf(x) : (x < 100000)
+                ? NumberFormat.getInstance(Locale.US).format((int) x).replace(",", " ") : (x < 1000000)
+                ? String.valueOf(numberFormat.format(x / 1000)) + "k" : (x < 100000000)
+                ? String.valueOf(numberFormat.format(x / 1000000)) + "M" : "> 100M";
+        String result2 = res + " " + HomeActivity.currencyTo;
         currencyTo.setText(result2);
     }
 
