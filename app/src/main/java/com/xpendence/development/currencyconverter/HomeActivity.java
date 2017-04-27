@@ -1,14 +1,15 @@
 package com.xpendence.development.currencyconverter;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,23 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        while (true) {
+            try {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView textView = (TextView) findViewById(R.id.textView3);
+                        textView.setText("Потяните, чтобы обновить курсы валют\n(последнее обновление — "
+                                + currencies.get("USD").getDate().replace("/", ".")
+                                + ")");
+                    }
+                }, 100);
+                break;
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
 
 //        LayoutInflater inflater = getLayoutInflater();
 //        View layout = inflater.inflate(R.layout.toast_layout,
@@ -164,15 +182,38 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         alertDialog.setCanceledOnTouchOutside(true);
     }
 
+    public static boolean isReallyOnline() {
+
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     @Override
     public void onRefresh() {
         final TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText("");
 
+        if (!isReallyOnline()) {
+            Toast.makeText(getBaseContext(), "Отсутствует соединение с интернетом", Toast.LENGTH_SHORT).show();
+            mSwipeRefreshLayout.setRefreshing(false);
+            textView.setText("Потяните, чтобы обновить курсы валют\n(последнее обновление — "
+                    + currencies.get("USD").getDate().replace("/", ".")
+                    + ")");
+            return;
+        }
+
         CurrenciesDBHelper dbHelper = new CurrenciesDBHelper(this);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Converter converter = new Converter(database);
         try {
+            Log.d("onRefresh invoke", converter.toString());
             converter.prepareDB();
             this.currencies = Converter.currencies;
         } catch (InterruptedException e) {
@@ -183,6 +224,16 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         textView.setText("Потяните, чтобы обновить курсы валют\n(последнее обновление — "
                 + currencies.get("USD").getDate().replace("/", ".")
                 + ")");
+    }
+
+    public void showCredits(View view) {
+        LayoutInflater li = LayoutInflater.from(view.getContext());
+        View promptsView = li.inflate(R.layout.credits_layout, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(view.getContext());
+        alertDialogBuilder.setView(promptsView);
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+        alertDialog.setCanceledOnTouchOutside(true);
     }
 
     private class OnSpinnerItemClickedFrom implements AdapterView.OnItemSelectedListener {

@@ -1,7 +1,6 @@
 package com.xpendence.development.currencyconverter.operations;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,7 +15,6 @@ import java.util.*;
  */
 
 public class Strategy {
-    private Map<String, Currency> currencies = new HashMap<>();
     private final String URL_FORMAT = "http://www.cbr.ru/currency_base/daily.aspx?date_req=%s";
     private static final String USER_AGENT = "Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6";
     private static final String REFERRER = "none";
@@ -35,7 +33,6 @@ public class Strategy {
         Document document = null;
         try {
             document = getDocument();
-            Log.d("process", "document created");
             String e = document.getElementsByAttributeValue("class", "data").get(0).getElementsByTag("td").text();
 //            System.out.println(e);
             StringTokenizer stringTokenizer = new StringTokenizer(e, " ");

@@ -7,4 +7,5 @@
     <string name="last_update">(последнее обновление — 01.01.2017)</string>
     <string name="refresh_started">Обновление началось</string>
     <string name="refresh_finished">Обновление завершено</string>
+    <string name="about">Приложение находится в стадии beta-теста.</string>
 </resources>

@@ -5,18 +5,19 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
-import android.provider.SyncStateContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.xpendence.development.currencyconverter.data.CurrenciesDBHelper;
 import com.xpendence.development.currencyconverter.operations.Converter;
 import com.xpendence.development.currencyconverter.operations.Currency;
 
-import java.io.Serializable;
 import java.util.Map;
+
+import static com.xpendence.development.currencyconverter.HomeActivity.isReallyOnline;
 
 public class MainActivity extends AppCompatActivity {
     public static Converter converter;
@@ -31,14 +32,6 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         converter = new Converter(database);
         prepareDbAndCurrencies(database);
-
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-//                startActivity(intent);
-//            }
-//        }, 1000);
     }
 
     public void prepareDbAndCurrencies(SQLiteDatabase database) {
@@ -47,16 +40,25 @@ public class MainActivity extends AppCompatActivity {
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 if (c.getString(0).equals("currencies")) {
-
                     Map<String, Currency> map = converter.getCurrencies(database);
                     if (map != null && map.size() != 0) {
                         Toast.makeText(getBaseContext(), "Загружено валют: " + map.size(),
                                 Toast.LENGTH_SHORT).show();
+                    } else {
+                        converter.getDemoCurrenciesWrap();
+                        Toast.makeText(getBaseContext(),
+                                "Отсутствует соединение с интернетом.\nПриложение работает в демо-режиме.",
+                                Toast.LENGTH_LONG).show();
                     }
                     Log.d("database", "exists");
                     c.close();
-                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                    startActivity(intent);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                        }
+                    }, 1000);
                     return;
                 }
                 c.moveToNext();
@@ -67,16 +69,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void writeCurrenciesToDB() {
+        if (!isReallyOnline()) {
+            converter.getDemoCurrenciesWrap();
+            Toast.makeText(getBaseContext(),
+                    "Отсутствует соединение с интернетом.\nПриложение работает в демо-режиме.",
+                    Toast.LENGTH_LONG).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(MainActivity.this, HintsActivity.class);
+                    startActivity(intent);
+                }
+            }, 3000);
+            return;
+        }
 
         try {
-//            Intent intent = new Intent(MainActivity.this, HintsActivity.class);
-//            intent.putExtra(SyncStateContract.Constants.DATA, (Serializable) converter);
-//            startActivity(intent);
+            Intent intent = new Intent(MainActivity.this, HintsActivity.class);
+            startActivity(intent);
             converter.prepareDB();
             Toast.makeText(getBaseContext(), "Курсы валют успешно обновлены",
                     Toast.LENGTH_SHORT).show();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void backToHome(View view) {
+        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+        startActivity(intent);
     }
 }

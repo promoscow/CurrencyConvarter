@@ -1,11 +1,13 @@
 package com.xpendence.development.currencyconverter.operations;
 
+import java.io.Serializable;
+
 /**
  * Класс валюты.
  * Created by promoscow on 21.04.17.
  */
 
-public class Currency {
+public class Currency implements Serializable {
     private String dCode;
     private String code;
     private int forAmount;
