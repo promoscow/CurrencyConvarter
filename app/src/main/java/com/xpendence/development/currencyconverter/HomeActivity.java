@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +38,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
     private Map<String, Currency> currencies;
     public static String currencyFrom;
     public static String currencyTo;
-    public static int amount;
+    public static double amount;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -46,6 +47,21 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+//        LayoutInflater inflater = getLayoutInflater();
+//        View layout = inflater.inflate(R.layout.toast_layout,
+//                (ViewGroup) findViewById(R.id.custom_toast_container));
+//
+//        TextView text = (TextView) layout.findViewById(R.id.text);
+//        text.setText("This is a custom toast");
+//
+//        Toast toast = new Toast(getApplicationContext());
+//        toast.setGravity(Gravity.BOTTOM, 0, 200);
+//        toast.setDuration(Toast.LENGTH_SHORT);
+//        toast.setView(layout);
+//        toast.show();
+
+//        Toast.makeText(getBaseContext(), "Курсы валют успешно обновлены", Toast.LENGTH_SHORT).show();
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -126,10 +142,12 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         editDisplayText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.d("keyCode", String.valueOf(keyCode));
                 if (event.getAction() == KeyEvent.ACTION_DOWN &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     String s = editDisplayText.getText().toString();
-                    if (s.length() != 0) amount = Integer.parseInt(s);
+                    Log.d("enter numbers", s);
+                    if (s.length() != 0) amount = Double.parseDouble(s);
                     if (amount <= 0) amount = 1;
                     alertDialog.cancel();
                     setRate();
@@ -160,7 +178,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Toast.makeText(getBaseContext(), "Обновлено валют: " + currencies.size(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Обновлено валют: " + currencies.size(), Toast.LENGTH_SHORT).show();
         mSwipeRefreshLayout.setRefreshing(false);
         textView.setText("Потяните, чтобы обновить курсы валют\n(последнее обновление — "
                 + currencies.get("USD").getDate().replace("/", ".")
@@ -224,17 +242,16 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         NumberFormat numberFormat = new DecimalFormat("0.00");
         numberFormat.setRoundingMode(RoundingMode.DOWN);
 
-
-
         TextView currencyFrom = (TextView) findViewById(R.id.textViewFrom);
-        String am = (amount < 100000)
-                ? NumberFormat.getInstance(Locale.US).format(amount).replace(",", " ") : (amount < 1000000)
-                ? String.valueOf(amount / 1000) + "k" : (amount < 100000000)
-                ? String.valueOf(amount / 1000000) + "M" : "100M";
+
+        String am = ((amount < 1000) && ((amount - (int) amount) == 0.0))
+                ? String.valueOf((int) amount) : (amount < 1000)
+                ? numberFormat.format(amount) : (amount < 100000)
+                ? NumberFormat.getInstance(Locale.US).format((int) amount).replace(",", " ") : (amount < 1000000)
+                ? String.valueOf((int) amount / 1000) + "k" : (amount < 100000000)
+                ? String.valueOf((int) amount / 1000000) + "M" : "100M";
         String result1 = am + " " + HomeActivity.currencyFrom;
         currencyFrom.setText(result1);
-
-
 
         TextView currencyTo = (TextView) findViewById(R.id.textViewTo);
         String res = (x < 1000)

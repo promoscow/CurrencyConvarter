@@ -14,7 +14,7 @@ import java.util.Map;
  */
 
 public class Calculator {
-    public static double calculate(Map<String, Currency> map, String currencyFirst, String currencySecond, int amount) throws IOException {
+    public static double calculate(Map<String, Currency> map, String currencyFirst, String currencySecond, double amount) throws IOException {
 
         Log.d("test", currencyFirst);
         Log.d("test", currencySecond);
@@ -28,8 +28,8 @@ public class Calculator {
         NumberFormat numberFormat = new DecimalFormat("0.00");
         numberFormat.setRoundingMode(RoundingMode.DOWN);
 
-        Log.d("mLog", String.format("%d %s = %s %s",
-                amount,
+        Log.d("mLog", String.format("%s %s = %s %s",
+                String.valueOf(amount),
                 currency1.getCode(),
                 String.valueOf(numberFormat.format(x)),
                 currency2.getCode()));
