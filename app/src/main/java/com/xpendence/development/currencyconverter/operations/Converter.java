@@ -10,6 +10,8 @@ import com.xpendence.development.currencyconverter.data.CurrenciesContract;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,12 +55,19 @@ public class Converter {
                         cursor.getString(dateIndex));
                 Log.d("read from DB", currency.toString());
                 Log.d("currency", currency.getCode());
-
                 map.put(currency.getCode(), currency);
             } while (cursor.moveToNext());
         } else {
             Log.d("currenciesDB", "0 rows");
         }
+        for (String s : map.keySet()) {
+            if (s.equals("RUB")) {
+                cursor.close();
+                return map;
+            }
+        }
+        Currency currency = new Currency("643", "RUB", 1, 1.0, new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+        map.put("RUB", currency);
         cursor.close();
         return map;
     }

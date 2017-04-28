@@ -40,31 +40,29 @@ public class MainActivity extends AppCompatActivity {
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 if (c.getString(0).equals("currencies")) {
+                    Log.d("prepareDbAndCurrencies1", "equals currencies");
                     Map<String, Currency> map = converter.getCurrencies(database);
                     if (map != null && map.size() != 0) {
+                        Log.d("prepareDbAndCurrencies2", "map!=null");
                         Toast.makeText(getBaseContext(), "Загружено валют: " + map.size(),
                                 Toast.LENGTH_SHORT).show();
-                    } else {
-                        converter.getDemoCurrenciesWrap();
-                        Toast.makeText(getBaseContext(),
-                                "Отсутствует соединение с интернетом.\nПриложение работает в демо-режиме.",
-                                Toast.LENGTH_LONG).show();
+                        Log.d("database", "exists");
+                        c.close();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                            }
+                        }, 1000);
+                        return;
                     }
-                    Log.d("database", "exists");
-                    c.close();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                        }
-                    }, 1000);
-                    return;
                 }
                 c.moveToNext();
             }
         }
         c.close();
+        Log.d("prepareDbAndCurrencies3", "writeCToDB");
         writeCurrenciesToDB();
     }
 

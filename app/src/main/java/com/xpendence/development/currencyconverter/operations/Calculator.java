@@ -34,6 +34,6 @@ public class Calculator {
                 String.valueOf(numberFormat.format(x)),
                 currency2.getCode()));
 
-        return Double.parseDouble(String.valueOf(numberFormat.format(x)));
+        return Double.parseDouble(String.valueOf(numberFormat.format(x)).replace(",", "."));
     }
 }
