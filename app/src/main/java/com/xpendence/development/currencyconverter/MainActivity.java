@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                     Map<String, Currency> map = converter.getCurrencies(database);
                     if (map != null && map.size() != 0) {
                         Log.d("prepareDbAndCurrencies2", "map!=null");
-                        Toast.makeText(getBaseContext(), "Загружено валют: " + map.size(),
+                        Toast.makeText(getBaseContext(), getString(R.string.downloaded) + map.size(),
                                 Toast.LENGTH_SHORT).show();
                         Log.d("database", "exists");
                         c.close();
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if (!isReallyOnline()) {
             converter.getDemoCurrenciesWrap();
             Toast.makeText(getBaseContext(),
-                    "Отсутствует соединение с интернетом.\nПриложение работает в демо-режиме.",
+                    R.string.in_demo,
                     Toast.LENGTH_LONG).show();
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, HintsActivity.class);
             startActivity(intent);
             converter.prepareDB();
-            Toast.makeText(getBaseContext(), "Курсы валют успешно обновлены",
+            Toast.makeText(getBaseContext(), R.string.update_successfull,
                     Toast.LENGTH_SHORT).show();
         } catch (InterruptedException e) {
             e.printStackTrace();

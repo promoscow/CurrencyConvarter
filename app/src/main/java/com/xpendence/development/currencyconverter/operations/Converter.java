@@ -6,11 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.xpendence.development.currencyconverter.HomeActivity;
 import com.xpendence.development.currencyconverter.data.CurrenciesContract;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

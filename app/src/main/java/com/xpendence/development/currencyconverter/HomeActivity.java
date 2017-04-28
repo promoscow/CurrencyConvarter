@@ -54,7 +54,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                     @Override
                     public void run() {
                         TextView textView = (TextView) findViewById(R.id.textView3);
-                        textView.setText("Потяните, чтобы обновить курсы валют\n(последнее обновление — "
+                        textView.setText(getString(R.string.swipe_to_update)
                                 + currencies.get("USD").getDate().replace("/", ".")
                                 + ")");
                     }
@@ -189,9 +189,9 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         textView.setText("");
 
         if (!isReallyOnline()) {
-            Toast.makeText(getBaseContext(), "Отсутствует соединение с интернетом", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
             mSwipeRefreshLayout.setRefreshing(false);
-            textView.setText("Потяните, чтобы обновить курсы валют\n(последнее обновление — "
+            textView.setText(getString(R.string.swipe_to_update)
                     + currencies.get("USD").getDate().replace("/", ".")
                     + ")");
             return;
@@ -207,9 +207,9 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Toast.makeText(getBaseContext(), "Обновлено валют: " + currencies.size(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), getString(R.string.updated) + currencies.size(), Toast.LENGTH_SHORT).show();
         mSwipeRefreshLayout.setRefreshing(false);
-        textView.setText("Потяните, чтобы обновить курсы валют\n(последнее обновление — "
+        textView.setText(getString(R.string.swipe_to_update)
                 + currencies.get("USD").getDate().replace("/", ".")
                 + ")");
     }
@@ -306,75 +306,75 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
     private String geCurrencyName(Currency s) {
         switch (s.getCode()) {
             case "AUD":
-                return "Австралийский доллар";
+                return getString(R.string.aud);
             case "AZN":
-                return "Азербайджанский манат";
+                return getString(R.string.azn);
             case "AMD":
-                return "Армянский драм";
+                return getString(R.string.amd);
             case "BYN":
-                return "Белорусский рубль";
+                return getString(R.string.byn);
             case "BGN":
-                return "Болгарский лев";
+                return getString(R.string.bgn);
             case "BRL":
-                return "Бразильский реал";
+                return getString(R.string.brl);
             case "HUF":
-                return "Венгерский форинт";
+                return getString(R.string.huf);
             case "KRW":
-                return "Южнокорейский вон";
+                return getString(R.string.krw);
             case "HKD":
-                return "Гонгконгский доллар";
+                return getString(R.string.hkd);
             case "DKK":
-                return "Датская крона";
+                return getString(R.string.dkk);
             case "USD":
-                return "Доллар США";
+                return getString(R.string.usd);
             case "EUR":
-                return "Евро";
+                return getString(R.string.eur);
             case "INR":
-                return "Индийская рупия";
+                return getString(R.string.inr);
             case "KZT":
-                return "Казахский тенге";
+                return getString(R.string.kzt);
             case "CAD":
-                return "Канадский доллар";
+                return getString(R.string.cad);
             case "KGS":
-                return "Киргизский сом";
+                return getString(R.string.kgs);
             case "CNY":
-                return "Китайский юань";
+                return getString(R.string.cny);
             case "MDL":
-                return "Молдавский лей";
+                return getString(R.string.mdl);
             case "TMT":
-                return "Туркменский манат";
+                return getString(R.string.tmt);
             case "NOK":
-                return "Норвежская крона";
+                return getString(R.string.nok);
             case "PLN":
-                return "Польский злотый";
+                return getString(R.string.pln);
             case "RON":
-                return "Румынский лей";
+                return getString(R.string.ron);
             case "XDR":
-                return "СДР";
+                return getString(R.string.xdr);
             case "SGD":
-                return "Сингапурский доллар";
+                return getString(R.string.sgd);
             case "TJS":
-                return "Таджикский сомони";
+                return getString(R.string.tjs);
             case "TRY":
-                return "Турецкая лира";
+                return getString(R.string.trl);
             case "UZS":
-                return "Узбекский сум";
+                return getString(R.string.uzs);
             case "UAH":
-                return "Украинская гривна";
+                return getString(R.string.uah);
             case "GBP":
-                return "Фунт Стерлингов";
+                return getString(R.string.gbp);
             case "CZK":
-                return "Чешская крона";
+                return getString(R.string.czk);
             case "SEK":
-                return "Шведская крона";
+                return getString(R.string.sek);
             case "CHF":
-                return "Швейцарский франк";
+                return getString(R.string.chf);
             case "ZAR":
-                return "Южноафриканский рэнд";
+                return getString(R.string.zar);
             case "JPY":
-                return "Японская йена";
+                return getString(R.string.jpy);
             case "RUB":
-                return "Российский рубль";
+                return getString(R.string.rub);
         }
         return null;
     }

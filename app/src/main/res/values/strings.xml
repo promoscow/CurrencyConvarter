@@ -1,11 +1,51 @@
 <resources>
-    <string name="app_name">Currency Converter</string>
-    <string name="equals">=</string>
-    <string name="fire">fire</string>
-    <string name="cancel">cancel</string>
+    <string name="app_name">Конвертер валют</string>
     <string name="slide_to_update">Потяните, чтобы обновить курсы валют\n(последнее обновление — 01.01.2017)</string>
     <string name="last_update">(последнее обновление — 01.01.2017)</string>
     <string name="refresh_started">Обновление началось</string>
     <string name="refresh_finished">Обновление завершено</string>
     <string name="about">Приложение находится в стадии beta-теста.</string>
+    <string name="swipe_to_update">Потяните, чтобы обновить курсы валют\n(последнее обновление —</string>
+    <string name="no_connection">Отсутствует соединение с интернетом</string>
+    <string name="updated">Обновлено валют:</string>
+    <string name="downloaded">Загружено валют:</string>
+    <string name="in_demo">Отсутствует соединение с интернетом. Приложение работает в демо-режиме.</string>
+    <string name="update_successfull">Курсы валют успешно обновлены</string>
+
+
+    <string name="aud">Австралийский доллар</string>
+    <string name="azn">Азербайджанский манат</string>
+    <string name="amd">Армянский драм</string>
+    <string name="byn">Белорусский рубль</string>
+    <string name="bgn">Болгарский лев</string>
+    <string name="brl">Бразильский реал</string>
+    <string name="huf">Венгерский форинт</string>
+    <string name="krw">Южнокорейский вон</string>
+    <string name="hkd">Гонгконгский доллар</string>
+    <string name="dkk">Датская крона</string>
+    <string name="usd">Доллар США</string>
+    <string name="eur">Евро</string>
+    <string name="inr">Индийская рупия</string>
+    <string name="kzt">Казахский тенге</string>
+    <string name="cad">Канадский доллар</string>
+    <string name="kgs">Киргизский сом</string>
+    <string name="cny">Китайский юань</string>
+    <string name="mdl">Молдавский лей</string>
+    <string name="tmt">Туркменский манат</string>
+    <string name="nok">Норвежская крона</string>
+    <string name="pln">Польский злотый</string>
+    <string name="ron">Румынский лей</string>
+    <string name="xdr">СДР</string>
+    <string name="sgd">Сингапурский доллар</string>
+    <string name="tjs">Таджикский сомони</string>
+    <string name="trl">Турецкая лира</string>
+    <string name="uzs">Узбекский сум</string>
+    <string name="uah">Украинская гривна</string>
+    <string name="gbp">Фунт Стерлингов</string>
+    <string name="czk">Чешская крона</string>
+    <string name="sek">Шведская крона</string>
+    <string name="chf">Швейцарский франк</string>
+    <string name="zar">Южноафриканский рэнд</string>
+    <string name="jpy">Японская йена</string>
+    <string name="rub">Российский рубль</string>
 </resources>

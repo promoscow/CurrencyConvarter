@@ -34,7 +34,6 @@ public class Strategy {
         try {
             document = getDocument();
             String e = document.getElementsByAttributeValue("class", "data").get(0).getElementsByTag("td").text();
-//            System.out.println(e);
             StringTokenizer stringTokenizer = new StringTokenizer(e, " ");
             while (stringTokenizer.hasMoreTokens()) {
                 String validToken = stringTokenizer.nextToken();
