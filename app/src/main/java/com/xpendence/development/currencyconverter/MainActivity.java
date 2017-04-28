@@ -19,6 +19,8 @@ import java.util.Map;
 
 import static com.xpendence.development.currencyconverter.HomeActivity.isReallyOnline;
 
+// TODO: 28.04.17 Локализация.
+
 public class MainActivity extends AppCompatActivity {
     public static Converter converter;
 

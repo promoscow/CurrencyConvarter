@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CurrencyConvarter</string>
+    <string name="app_name">Currency Converter</string>
     <string name="equals">=</string>
     <string name="fire">fire</string>
     <string name="cancel">cancel</string>

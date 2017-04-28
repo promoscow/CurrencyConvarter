@@ -6,10 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.xpendence.development.currencyconverter.HomeActivity;
 import com.xpendence.development.currencyconverter.data.CurrenciesContract;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,7 +57,13 @@ public class Converter {
                 map.put(currency.getCode(), currency);
             } while (cursor.moveToNext());
         } else {
-            Log.d("currenciesDB", "0 rows");
+            Log.d("Converter_currenciesDB", "0 rows");
+            currencies = getDemoCurrencies();
+            Map<String, Currency> tempMap = currencies;
+            for (Currency currency : tempMap.values()) {
+                Log.d("tempCurrency", currency.toString());
+            }
+
         }
         for (String s : map.keySet()) {
             if (s.equals("RUB")) {
@@ -66,8 +71,8 @@ public class Converter {
                 return map;
             }
         }
-        Currency currency = new Currency("643", "RUB", 1, 1.0, new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
-        map.put("RUB", currency);
+//        Currency currency = new Currency("643", "RUB", 1, 1.0, new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+//        map.put("RUB", currency);
         cursor.close();
         return map;
     }
@@ -110,6 +115,7 @@ public class Converter {
         currencies = getDemoCurrencies();
     }
 
+    // TODO: 28.04.17 Захардкодил временно. Переделать в сериализацию.
     private Map<String, Currency> getDemoCurrencies() {
         Map<String, Currency> map = new HashMap<>();
         map.put("AMD", new Currency("051", "AMD", 100, 11.7587, "28.04.2017"));

@@ -1,7 +1,6 @@
 package com.xpendence.development.currencyconverter;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
@@ -66,21 +65,6 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         }
 
-//        LayoutInflater inflater = getLayoutInflater();
-//        View layout = inflater.inflate(R.layout.toast_layout,
-//                (ViewGroup) findViewById(R.id.custom_toast_container));
-//
-//        TextView text = (TextView) layout.findViewById(R.id.text);
-//        text.setText("This is a custom toast");
-//
-//        Toast toast = new Toast(getApplicationContext());
-//        toast.setGravity(Gravity.BOTTOM, 0, 200);
-//        toast.setDuration(Toast.LENGTH_SHORT);
-//        toast.setView(layout);
-//        toast.show();
-
-//        Toast.makeText(getBaseContext(), "Курсы валют успешно обновлены", Toast.LENGTH_SHORT).show();
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -88,7 +72,11 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        currencies = Converter.currencies;
+        currencies = Converter.getCurrencies();
+        for (Map.Entry<String, Currency> entry : currencies.entrySet()) {
+            String s = entry.getKey() + " / " + entry.getValue();
+            Log.d("HomeActivityCur", s);
+        }
         currencyFrom = currencies.get("USD").getCode();
         currencyTo = currencies.get("RUB").getCode();
         amount = 1;
@@ -314,6 +302,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         currencyTo.setText(result2);
     }
 
+    // TODO: 28.04.17 Захардкодил временно. Переделать в файл.
     private String geCurrencyName(Currency s) {
         switch (s.getCode()) {
             case "AUD":
