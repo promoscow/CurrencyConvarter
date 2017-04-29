@@ -19,7 +19,8 @@ import java.util.Map;
 
 import static com.xpendence.development.currencyconverter.HomeActivity.isReallyOnline;
 
-// TODO: 28.04.17 Локализация.
+// TODO: 29.04.17 Сделано: XML Parser
+// TODO: 29.04.17 Сделано: убрано возвращение к splash-экрану при нажатии кнопки "назад".
 
 public class MainActivity extends AppCompatActivity {
     public static Converter converter;
@@ -98,5 +99,11 @@ public class MainActivity extends AppCompatActivity {
     public void backToHome(View view) {
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 }

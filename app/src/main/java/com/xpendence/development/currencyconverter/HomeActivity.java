@@ -289,7 +289,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                 ? NumberFormat.getInstance(Locale.US).format((int) amount).replace(",", " ") : (amount < 1000000)
                 ? String.valueOf((int) amount / 1000) + "k" : (amount < 100000000)
                 ? String.valueOf((int) amount / 1000000) + "M" : "100M";
-        String result1 = am + " " + HomeActivity.currencyFrom;
+        String result1 = (am + " " + HomeActivity.currencyFrom).replace(",", ".");
         currencyFrom.setText(result1);
 
         TextView currencyTo = (TextView) findViewById(R.id.textViewTo);
