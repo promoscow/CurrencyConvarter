@@ -18,4 +18,10 @@ public class HintsActivity extends AppCompatActivity {
         Intent intent = new Intent(HintsActivity.this, HomeActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
 }

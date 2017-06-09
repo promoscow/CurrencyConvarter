@@ -1,8 +1,11 @@
 package com.xpendence.development.currencyconverter;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -145,6 +149,9 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
          * Создание @textEdit
          */
         final EditText editDisplayText = (EditText) promptsView.findViewById(R.id.editDisplayTextAmount);
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         editDisplayText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -157,6 +164,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                     if (amount <= 0) amount = 1;
                     alertDialog.cancel();
                     setRate();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
                     return true;
                 }
                 return false;
@@ -207,7 +216,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Toast.makeText(getBaseContext(), getString(R.string.updated) + currencies.size(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), getString(R.string.updated) + " " + currencies.size(), Toast.LENGTH_SHORT).show();
         mSwipeRefreshLayout.setRefreshing(false);
         textView.setText(getString(R.string.swipe_to_update)
                 + currencies.get("USD").getDate().replace("/", ".")
@@ -222,6 +231,12 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(true);
+    }
+
+    public void voteForApplication(View view) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("market://details?id=com.xpendence.development.currencyconvarter"));
+        startActivity(intent);
     }
 
     private class OnSpinnerItemClickedFrom implements AdapterView.OnItemSelectedListener {
@@ -293,7 +308,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         currencyFrom.setText(result1);
 
         TextView currencyTo = (TextView) findViewById(R.id.textViewTo);
-        String res = (x < 1000)
+        String res = ((x < 1000) && ((x - (int) x) ==0.0))
+                ? String.valueOf((int) x) : (x < 1000)
                 ? String.valueOf(x) : (x < 100000)
                 ? NumberFormat.getInstance(Locale.US).format((int) x).replace(",", " ") : (x < 1000000)
                 ? String.valueOf(numberFormat.format(x / 1000)) + "k" : (x < 100000000)

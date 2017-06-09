@@ -19,9 +19,12 @@ import java.util.Map;
 
 import static com.xpendence.development.currencyconverter.HomeActivity.isReallyOnline;
 
-// TODO: 29.04.17 Сделано: XML Parser
-// TODO: 29.04.17 Сделано: убрано возвращение к splash-экрану при нажатии кнопки "назад".
-
+/**
+ * Применённые технологии и библиотеки:
+ * 1. SQLite
+ * 2. SwipeRefreshLayout
+ * 3. Jsoup
+ */
 public class MainActivity extends AppCompatActivity {
     public static Converter converter;
 
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     Map<String, Currency> map = converter.getCurrencies(database);
                     if (map != null && map.size() != 0) {
                         Log.d("prepareDbAndCurrencies2", "map!=null");
-                        Toast.makeText(getBaseContext(), getString(R.string.downloaded) + map.size(),
+                        Toast.makeText(getBaseContext(), getString(R.string.downloaded) + " " + map.size(),
                                 Toast.LENGTH_SHORT).show();
                         Log.d("database", "exists");
                         c.close();

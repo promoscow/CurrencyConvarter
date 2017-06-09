@@ -40,7 +40,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:hint="Введите сумму"
+        android:hint="@string/enter_amount"
         android:inputType="numberDecimal"
         android:textSize="25sp"
         android:visibility="visible"

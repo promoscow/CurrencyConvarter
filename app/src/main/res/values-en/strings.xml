@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Currency Converter</string>
-    <string name="about">The application is in beta-test phase</string>
+    <string name="about">You may vote for our Application:</string>
     <string name="amd">Armenian Drahm</string>
     <string name="aud">Australian Dollar</string>
     <string name="azn">Azerbaijani manat</string>
@@ -47,4 +47,5 @@
     <string name="uzs">Uzbek Sum</string>
     <string name="xdr">" "</string>
     <string name="zar">South African Rand</string>
+    <string name="enter_amount">Enter amount</string>
 </resources>
