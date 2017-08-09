@@ -86,6 +86,10 @@ public class Converter {
             return new Strategy().getCurrencies();
         }
 
+        /**
+         * Writing to database
+         * @param map - target map for reading.
+         */
         @Override
         protected void onPostExecute(Map<String, Currency> map) {
             Log.d("method invoke", "onPostExecute, map");

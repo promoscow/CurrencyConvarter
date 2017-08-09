@@ -1,6 +1,7 @@
 package com.xpendence.development.currencyconverter;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -105,8 +107,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         alertDialogBuilder.setView(promptsView);
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
-        /*
-          Создание @SpinnerFrom
+        /**
+         * Создание @SpinnerFrom
          */
         Spinner dialogSpinnerFrom = (Spinner) promptsView
                 .findViewById(R.id.spinnerFrom);
@@ -124,8 +126,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         dialogSpinnerFrom.setSelection(indexFrom);
         dialogSpinnerFrom.setOnItemSelectedListener(new OnSpinnerItemClickedFrom());
 
-        /*
-          Создание @SpinnerTo
+        /**
+         * Создание @SpinnerTo
          */
         Spinner dialogSpinnerTo = (Spinner) promptsView
                 .findViewById(R.id.spinnerTo);
@@ -143,10 +145,13 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         dialogSpinnerTo.setSelection(indexTo);
         dialogSpinnerTo.setOnItemSelectedListener(new OnSpinnerItemClickedTo());
 
-        /*
-          Создание @textEdit
+        /**
+         * Создание @textEdit
          */
         final EditText editDisplayText = (EditText) promptsView.findViewById(R.id.editDisplayTextAmount);
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         editDisplayText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -159,14 +164,16 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                     if (amount <= 0) amount = 1;
                     alertDialog.cancel();
                     setRate();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
                     return true;
                 }
                 return false;
             }
         });
 
-        /*
-          Показ диалогового окна.
+        /**
+         * Показ диалогового окна.
          */
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(true);
@@ -275,7 +282,6 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         @Override
         public void onNothingSelected(AdapterView parent) {
-
         }
     }
 
