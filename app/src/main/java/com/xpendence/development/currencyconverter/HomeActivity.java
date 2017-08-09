@@ -1,8 +1,10 @@
 package com.xpendence.development.currencyconverter;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -103,8 +105,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         alertDialogBuilder.setView(promptsView);
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
-        /**
-         * Создание @SpinnerFrom
+        /*
+          Создание @SpinnerFrom
          */
         Spinner dialogSpinnerFrom = (Spinner) promptsView
                 .findViewById(R.id.spinnerFrom);
@@ -122,8 +124,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         dialogSpinnerFrom.setSelection(indexFrom);
         dialogSpinnerFrom.setOnItemSelectedListener(new OnSpinnerItemClickedFrom());
 
-        /**
-         * Создание @SpinnerTo
+        /*
+          Создание @SpinnerTo
          */
         Spinner dialogSpinnerTo = (Spinner) promptsView
                 .findViewById(R.id.spinnerTo);
@@ -141,8 +143,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         dialogSpinnerTo.setSelection(indexTo);
         dialogSpinnerTo.setOnItemSelectedListener(new OnSpinnerItemClickedTo());
 
-        /**
-         * Создание @textEdit
+        /*
+          Создание @textEdit
          */
         final EditText editDisplayText = (EditText) promptsView.findViewById(R.id.editDisplayTextAmount);
         editDisplayText.setOnKeyListener(new View.OnKeyListener() {
@@ -163,8 +165,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         });
 
-        /**
-         * Показ диалогового окна.
+        /*
+          Показ диалогового окна.
          */
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(true);
@@ -207,7 +209,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Toast.makeText(getBaseContext(), getString(R.string.updated) + currencies.size(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), getString(R.string.updated) + " " + currencies.size(), Toast.LENGTH_SHORT).show();
         mSwipeRefreshLayout.setRefreshing(false);
         textView.setText(getString(R.string.swipe_to_update)
                 + currencies.get("USD").getDate().replace("/", ".")
@@ -222,6 +224,12 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(true);
+    }
+
+    public void voteForApplication(View view) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("market://details?id=com.xpendence.development.currencyconvarter"));
+        startActivity(intent);
     }
 
     private class OnSpinnerItemClickedFrom implements AdapterView.OnItemSelectedListener {
@@ -267,6 +275,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         @Override
         public void onNothingSelected(AdapterView parent) {
+
         }
     }
 
@@ -293,7 +302,8 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         currencyFrom.setText(result1);
 
         TextView currencyTo = (TextView) findViewById(R.id.textViewTo);
-        String res = (x < 1000)
+        String res = ((x < 1000) && ((x - (int) x) ==0.0))
+                ? String.valueOf((int) x) : (x < 1000)
                 ? String.valueOf(x) : (x < 100000)
                 ? NumberFormat.getInstance(Locale.US).format((int) x).replace(",", " ") : (x < 1000000)
                 ? String.valueOf(numberFormat.format(x / 1000)) + "k" : (x < 100000000)

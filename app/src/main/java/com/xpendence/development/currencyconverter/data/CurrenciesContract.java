@@ -9,14 +9,12 @@ import android.provider.BaseColumns;
 
 public final class CurrenciesContract {
 
-    public CurrenciesContract() {
-    }
 
     public static final class Currencies implements BaseColumns {
 
         public static final String TABLE_NAME = "currencies";
 
-        public static final String _ID = BaseColumns._ID;
+        static final String _ID = BaseColumns._ID;
         public static final String D_CODE = "dCode";
         public static final String CODE = "code";
         public static final String FOR_AMOUNT = "forAmount";

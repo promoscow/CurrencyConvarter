@@ -33,7 +33,7 @@ public class Converter {
         new DBConnection().execute();
     }
 
-    public Map<String, Currency> readCurrenciesFromDB(SQLiteDatabase database) {
+    private Map<String, Currency> readCurrenciesFromDB(SQLiteDatabase database) {
         Map<String, Currency> map = new HashMap<>();
         Cursor cursor = database.query(CurrenciesContract.Currencies.TABLE_NAME,
                 null, null, null, null, null, null);
@@ -63,7 +63,7 @@ public class Converter {
 
         }
         for (String s : map.keySet()) {
-            if (s.equals("RUB")) {
+            if ("RUB".equals(s)) {
                 cursor.close();
                 return map;
             }

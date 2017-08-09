@@ -4,13 +4,14 @@
     <string name="last_update">(последнее обновление — 01.01.2017)</string>
     <string name="refresh_started">Обновление началось</string>
     <string name="refresh_finished">Обновление завершено</string>
-    <string name="about">Приложение находится в стадии beta-теста.</string>
+    <string name="about">Atom Group\n\n—\n\nВы можете оценить приложение:</string>
     <string name="swipe_to_update">Потяните, чтобы обновить курсы валют\n(последнее обновление —</string>
     <string name="no_connection">Отсутствует соединение с интернетом</string>
-    <string name="updated">Обновлено валют:</string>
-    <string name="downloaded">Загружено валют:</string>
+    <string name="updated">Обновлено валют: </string>
+    <string name="downloaded">Загружено валют: </string>
     <string name="in_demo">Отсутствует соединение с интернетом. Приложение работает в демо-режиме.</string>
     <string name="update_successfull">Курсы валют успешно обновлены</string>
+    <string name="enter_amount">Введите сумму</string>
 
 
     <string name="aud">Австралийский доллар</string>
