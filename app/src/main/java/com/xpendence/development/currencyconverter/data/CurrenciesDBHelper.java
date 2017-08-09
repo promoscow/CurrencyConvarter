@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Помощник создания и обновления базы данных валют.
+ * Помощник создания и обновления базы  данных валют.
  * Created by promoscow on 20.04.17.
  */
 
