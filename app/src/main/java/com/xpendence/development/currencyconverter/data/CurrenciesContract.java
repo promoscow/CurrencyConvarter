@@ -14,7 +14,7 @@ public final class CurrenciesContract {
 
         public static final String TABLE_NAME = "currencies";
 
-        static final String _ID = BaseColumns._ID;
+        public static final String _ID = BaseColumns._ID;
         public static final String D_CODE = "dCode";
         public static final String CODE = "code";
         public static final String FOR_AMOUNT = "forAmount";
