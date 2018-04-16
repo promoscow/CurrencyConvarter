@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -36,7 +37,11 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringTokenizer;
+
+import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN;
+import static android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS;
 
 public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private Map<String, Currency> currencies;
@@ -44,7 +49,15 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static String currencyTo;
     public static double amount;
 
+    private Spinner dialogSpinnerFrom;
+    private Spinner dialogSpinnerTo;
+
+    int indexFrom;
+    int indexTo;
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    String[] currenciesArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +70,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        TextView textView = (TextView) findViewById(R.id.textView3);
+                        TextView textView = findViewById(R.id.textView3);
                         textView.setText(getString(R.string.swipe_to_update)
                                 + currencies.get("USD").getDate().replace("/", ".")
                                 + ")");
@@ -69,7 +82,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         }
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout = findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -85,19 +98,34 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         currencyTo = currencies.get("RUB").getCode();
         amount = 1;
 
+        currenciesArray = new String[currencies.size()];
+        int i = 0;
+        for (Currency s : currencies.values())
+            currenciesArray[i++] = String.format("%s (%s)", s.getCode(), geCurrencyName(s));
+
         setRate();
+        this.getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        try {
+            View focusView = this.getCurrentFocus();
+            if (focusView != null) {
+                focusView.clearFocus();
+                ((InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(focusView.getWindowToken(), HIDE_NOT_ALWAYS);
+            }
+        } catch (NullPointerException e) {
+            String message = e.getMessage();
+            Log.v("KeyBrdUtils", message == null ? "" : message);
+        }
     }
 
     public void createDialog(View view) {
         for (String s : currencies.keySet()) Log.d("currency createDialog", s);
-        final String[] currenciesArray = new String[currencies.size()];
-        int i = 0;
-        for (Currency s : currencies.values())
-            currenciesArray[i++] = String.format("%s (%s)", s.getCode(), geCurrencyName(s));
-        int indexFrom = Arrays.asList(currenciesArray).indexOf(String.format("%s (%s)",
+
+        indexFrom = Arrays.asList(currenciesArray).indexOf(String.format("%s (%s)",
                 currencies.get(currencyFrom).getCode(),
                 geCurrencyName(currencies.get(currencyFrom))));
-        int indexTo = Arrays.asList(currenciesArray).indexOf(String.format("%s (%s)",
+        indexTo = Arrays.asList(currenciesArray).indexOf(String.format("%s (%s)",
                 currencies.get(currencyTo).getCode(),
                 geCurrencyName(currencies.get(currencyTo))));
 
@@ -110,8 +138,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         /**
          * Создание @SpinnerFrom
          */
-        Spinner dialogSpinnerFrom = (Spinner) promptsView
-                .findViewById(R.id.spinnerFrom);
+        dialogSpinnerFrom = promptsView.findViewById(R.id.spinnerFrom);
 
         ArrayAdapter<String> adapterFrom = new ArrayAdapter<String>(view.getContext(),
                 android.R.layout.simple_spinner_item, currenciesArray) {
@@ -129,8 +156,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         /**
          * Создание @SpinnerTo
          */
-        Spinner dialogSpinnerTo = (Spinner) promptsView
-                .findViewById(R.id.spinnerTo);
+        dialogSpinnerTo = promptsView.findViewById(R.id.spinnerTo);
 
         ArrayAdapter<String> adapterTo = new ArrayAdapter<String>(view.getContext(),
                 android.R.layout.simple_spinner_item, currenciesArray) {
@@ -148,10 +174,16 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         /**
          * Создание @textEdit
          */
-        final EditText editDisplayText = (EditText) promptsView.findViewById(R.id.editDisplayTextAmount);
+        final EditText editDisplayText = promptsView.findViewById(R.id.editDisplayTextAmount);
+        editDisplayText.setText(String.valueOf(getAmountFromDouble(amount)));
+        editDisplayText.setSelection(editDisplayText.getText().length());
 
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+
         editDisplayText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -165,7 +197,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                     alertDialog.cancel();
                     setRate();
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
+                    imm.toggleSoftInput(HIDE_NOT_ALWAYS, 0);
                     return true;
                 }
                 return false;
@@ -177,6 +209,20 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
          */
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(true);
+    }
+
+    private CharSequence getAmountFromDouble(double amount) {
+        int digit = (int) amount;
+        if (digit == amount) return String.valueOf(digit);
+        else return String.valueOf(amount);
+    }
+
+    public void changeCurrencies(View view) {
+        int temp = indexFrom;
+        indexFrom = indexTo;
+        indexTo = temp;
+        dialogSpinnerFrom.setSelection(indexFrom);
+        dialogSpinnerTo.setSelection(indexTo);
     }
 
     public static boolean isReallyOnline() {
@@ -194,7 +240,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        final TextView textView = (TextView) findViewById(R.id.textView3);
+        final TextView textView = findViewById(R.id.textView3);
         textView.setText("");
 
         if (!isReallyOnline()) {
@@ -253,6 +299,9 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                     .get(new StringTokenizer(String.valueOf(currenciesArrayDisplay[pos]), " ")
                             .nextToken())
                     .getCode();
+            indexFrom = Arrays.asList(currenciesArray).indexOf(String.format("%s (%s)",
+                    currencies.get(currencyFrom).getCode(),
+                    geCurrencyName(currencies.get(currencyFrom))));
             Log.d("currency onItemSelected", currencyFrom);
             setRate();
         }
@@ -276,6 +325,9 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                     .get(new StringTokenizer(String.valueOf(currenciesArrayDisplay[pos]), " ")
                             .nextToken())
                     .getCode();
+            indexTo = Arrays.asList(currenciesArray).indexOf(String.format("%s (%s)",
+                    currencies.get(currencyTo).getCode(),
+                    geCurrencyName(currencies.get(currencyTo))));
             Log.d("currency onItemSelected", currencyTo);
             setRate();
         }
@@ -296,7 +348,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         NumberFormat numberFormat = new DecimalFormat("0.00");
         numberFormat.setRoundingMode(RoundingMode.DOWN);
 
-        TextView currencyFrom = (TextView) findViewById(R.id.textViewFrom);
+        TextView currencyFrom = findViewById(R.id.textViewFrom);
 
         String am = ((amount < 1000) && ((amount - (int) amount) == 0.0))
                 ? String.valueOf((int) amount) : (amount < 1000)
@@ -307,7 +359,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         String result1 = (am + " " + HomeActivity.currencyFrom).replace(",", ".");
         currencyFrom.setText(result1);
 
-        TextView currencyTo = (TextView) findViewById(R.id.textViewTo);
+        TextView currencyTo = findViewById(R.id.textViewTo);
         String res = ((x < 1000) && ((x - (int) x) ==0.0))
                 ? String.valueOf((int) x) : (x < 1000)
                 ? String.valueOf(x) : (x < 100000)
@@ -318,7 +370,6 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         currencyTo.setText(result2);
     }
 
-    // TODO: 28.04.17 Захардкодил временно. Переделать в файл.
     private String geCurrencyName(Currency s) {
         switch (s.getCode()) {
             case "AUD":

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,6 +20,15 @@
         android:layout_marginTop="8dp"
         android:dropDownWidth="match_parent"
         android:scrollbarSize="@android:dimen/app_icon_size" />
+
+    <ImageView
+        android:id="@+id/refresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="changeCurrencies"
+        android:paddingBottom="20px"
+        android:paddingTop="20px"
+        app:srcCompat="@drawable/swap_vertical_2" />
 
     <Spinner
         android:id="@+id/spinnerTo"
